@@ -1,0 +1,75 @@
+  
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: nodejs-demoapp
+  name: nodejs-deployment
+  namespace: cicdk8ns
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: nodejs-demoapp
+  strategy: 
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: nodejs-demoapp
+    spec:
+      containers:
+      - image: 911884746063.dkr.ecr.ap-south-1.amazonaws.com/nodejs-repo:latest
+        name: nodejs-repo
+        ports:
+        - containerPort: 8080
+        resources: 
+          limits: 
+            cpu: <based on requirement>
+            memory: <based on requirement>
+        
+ ---
+
+  apiVersion: autoscaling/v2beta2
+  kind: HorizontalPodAutoscaler
+  metadata:
+    name: nodejs-demoapp
+    namespace: cicdk8ns
+  spec:
+    scaleTargetRef:
+      apiVersion: apps/v1beta1
+      kind: Deployment
+      name: nodejs-demoapp
+    minReplicas: 7
+    maxReplicas: 10
+    metrics:
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: 60
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: 50
+     priorityClassName: system-node-critical  #Setting higher priority than daemonset pods
+
+---
+  apiVersion: v1
+  kind: Service
+  metadata:
+     creationTimestamp: null
+     labels:
+       app: cicdk8
+     name: cicdk8_svc
+  spec:
+    selector:
+      app: nodejs-demoapp
+    ports:
+      - port: 3000
+        targetPort: 8080
+    type: LoadBalancer
