@@ -44,3 +44,4 @@ spec:
           limits: 
             cpu: <based on requirement>
             memory: <based on requirement
+      priorityClassName: high-priority #Setting Higher priority than DeamonSet pods.   
