@@ -24,8 +24,8 @@ spec:
         app: nodejs-demoapp
     spec:
       containers:
-      - image: 911884746063.dkr.ecr.ap-south-1.amazonaws.com/nodejs-repo:latest
-        name: nodejs-repo
+      - image: 911884746063.dkr.ecr.ap-south-1.amazonaws.com/nodejs-test:latest
+        name: nodejs-test
         ports:
         - containerPort: 8080
         resources: 
